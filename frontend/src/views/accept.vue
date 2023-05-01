@@ -151,7 +151,7 @@ export default {
   methods: {
     getBlogs() {
       axios
-        .get("http://localhost:3000/addrequest")
+        .get("http://3.210.122.105/addrequest")
         .then((response) => {
           this.blogs = response.data.borrowdate;
         })
@@ -161,7 +161,7 @@ export default {
     },
     imagePath(file_path) {
       if (file_path) {
-        return "http://localhost:3000/" + file_path;
+        return "http://3.210.122.105:3000/" + file_path;
       } else {
         return "https://bulma.io/images/placeholders/640x360.png";
       }
@@ -180,7 +180,7 @@ export default {
       };
       console.log(data)
       axios
-        .post("http://localhost:3000/borrow", data)
+        .post("http://3.210.122.105:3000/borrow", data)
         .then((res) => {
           if (this.blogs.length > 1) {
             this.blogs = Array.from(this.blogs);
@@ -211,7 +211,7 @@ export default {
         confirmID: cart.con_ID,
       };
       axios
-        .delete("http://localhost:3000/deletecomfirm", { data: { bookID: cart.con_book_id, confirmID: cart.con_ID } })
+        .delete("http://3.210.122.105:3000/deletecomfirm", { data: { bookID: cart.con_book_id, confirmID: cart.con_ID } })
         .then((res) => {
           if (this.blogs.length > 1) {
             this.blogs = Array.from(this.blogs);

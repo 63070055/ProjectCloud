@@ -203,7 +203,7 @@ export default {
   methods: {
     getBlogs() {
       axios
-        .get("http://localhost:3000", {
+        .get("http://3.210.122.105:3000", {
           params: {
             search: this.search,
           },
@@ -217,7 +217,7 @@ export default {
     },
     imagePath(file_path) {
       if (file_path) {
-        return "http://localhost:3000/" + file_path;
+        return "http://3.210.122.105:3000/" + file_path;
       } else {
         return "https://bulma.io/images/placeholders/640x360.png";
       }
@@ -246,7 +246,7 @@ export default {
         bookid: this.cart.book_id,
       };
       axios
-        .post("http://localhost:3000/edit", data)
+        .post("http://3.210.122.105:3000/edit", data)
         .then((res) => {
           this.$router.push("/home");
         })
@@ -261,7 +261,7 @@ export default {
       };
       console.log(data)
       axios
-        .delete(`http://localhost:3000/delete/${this.cart.book_id}`)
+        .delete(`http://3.210.122.105:3000/delete/${this.cart.book_id}`)
         .then((res) => {
           this.$router.push("/home");
         })

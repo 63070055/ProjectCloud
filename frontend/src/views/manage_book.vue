@@ -246,7 +246,7 @@ export default {
     //   // พอไปฝั่ง backend มันจะจัด file ให้เป็น Array เพื่อเอาไปใช้งานต่อได้
 
       axios
-        .post("http://localhost:3000/addBook", formData)
+        .post("http://3.210.122.105:3000/addBook", formData)
         .then((res) => this.$router.push("/home"))
         .catch((e) => console.log(e.response.data));
     },

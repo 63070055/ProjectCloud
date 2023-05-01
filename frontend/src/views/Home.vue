@@ -339,7 +339,7 @@ export default {
     getBlogs() {
       if (this.check == false) {
         axios
-          .get("http://localhost:3000", {
+          .get("http://3.95.181.82:3000", {
             params: {
               search: this.search,
             },

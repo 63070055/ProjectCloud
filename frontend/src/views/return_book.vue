@@ -193,7 +193,7 @@ export default {
   methods: {
     getreturn() {
       axios
-        .get("http://localhost:3000/borrow_return")
+        .get("http://3.210.122.105:3000/borrow_return")
         .then((response) => {
           this.returndata = response.data.returndata.filter(
             (val) => val.book_id == this.cart.book_id && val.return_date == null
@@ -211,7 +211,7 @@ export default {
     },
     imagePath(book_image) {
       if (book_image) {
-        return "http://localhost:3000/" + book_image;
+        return "http://3.210.122.105:3000/" + book_image;
       } else {
         return "https://bulma.io/images/placeholders/640x360.png";
       }
@@ -222,7 +222,7 @@ export default {
         return_date: this.return_date,
       };
       axios
-        .post("http://localhost:3000/return", data)
+        .post("http://3.210.122.105:3000/return", data)
         .then((res) => {
           if(this.returndata1.length > 1){
             this.returndata1 = Array.from(this.returndata1);

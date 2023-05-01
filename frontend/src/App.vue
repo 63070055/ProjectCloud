@@ -118,7 +118,7 @@ export default {
     },
     DeletePassword() {
       axios
-        .delete(`http://localhost:3000/user/logout`)
+        .delete(`http://3.210.122.105:3000/user/logout`)
         .then((response) => {
           localStorage.removeItem("token")
           this.user = null

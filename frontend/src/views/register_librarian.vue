@@ -435,7 +435,7 @@ export default {
         };
         console.log(data)
         axios
-          .post("http://localhost:3000/user/signuplibrarian", data)
+          .post("http://3.210.122.105:3000/user/signuplibrarian", data)
           .then((res) => {
             this.$router.push("/home");
           })

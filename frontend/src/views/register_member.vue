@@ -346,7 +346,7 @@ export default {
         };
 
         axios
-          .post("http://localhost:3000/user/signup", data)
+          .post("http://3.210.122.105:3000/user/signup", data)
           .then((res) => {
             this.$router.push("/user/login");
           })
