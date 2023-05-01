@@ -2,17 +2,24 @@
 @import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
 
+body {
+  height: 100%;
+}
+
 .background-borrow {
   background-image: linear-gradient(rgba(220, 130, 26, 0.5),
       rgba(60, 55, 157, 0.5)),
     url("./imageforpage/bg7.jpg");
+  /* background-size: cover; */
+  min-height: 100vh;
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
   background-size: cover;
-  /* min-height: 100%; */
+
+  /* position: absolute; */
   width: 100%;
   font-family: "Bebas Neue", cursive;
-  background-position: center;
-  background-repeat: repeat;
-  background-size: cover;
 }
 
 #test1 {
@@ -23,9 +30,6 @@
   color: white;
 }
 
-/* #div2{
-  position: absolute;
-} */
 #text-button {
   font-size: 1vw;
   font-family: "Bebas Neue", cursive;
@@ -37,7 +41,7 @@
   <div class="background-borrow">
     <div class="columns">
       <div class="column is-8 is-offset-2">
-        <div class="box" v-for="cart in cart" :key="cart.book_id"
+        <div class="box" v-for="(cart, index) in blogs" :key="cart.con_ID"
           style="background-color: rgba(0, 0, 0, 0.5); border-style: solid; border-width: .5vw; border-color: rgba(61, 76, 83, 0.3); border-radius: 1vw; margin-top: 5vw;">
           <div class="row">
             <div class="column is-3 ml-5">
@@ -55,15 +59,14 @@
               <div class="field mt-4">
                 <label class="label" style="color:white; letter-spacing: 1px;">STATUS</label>
                 <div class="control">
-                  <input id="test1" disabled class="input" type="text" placeholder="borrowed" />
+                  <input id="test1" disabled class="input" type="text" placeholder="waiting" />
                 </div>
               </div>
               <div class="field mt-4">
                 <label class="label" style="color:white; letter-spacing: 1px;">BORROW DATE</label>
                 <div class="control">
-                  <input id="test1" disabled="disabled" class="input" type="date" placeholder="2022-01-15"
-                    :value="borrowdate" />
-
+                  <input id="test1" disabled="disabled" class="input" placeholder="2022-01-15"
+                    :value="cart.con_borrow_date.slice(0, 10)" />
                 </div>
               </div>
               <br />
@@ -83,48 +86,30 @@
               <div class="field mt-4">
                 <label class="label" style="color:white; letter-spacing: 1px;">BORROW BY</label>
                 <div class="control">
-                  <input id="test1" class="input" type="number" placeholder="BORROW BY" :value="user.member_id"
+                  <input id="test1" class="input" type="number" placeholder="BORROW BY" :value="cart.con_member_id"
                     disabled />
                 </div>
               </div>
               <div class="field mt-4">
                 <label class="label" style="color:white; letter-spacing: 1px;">DATELINE DATE</label>
                 <div class="control">
-                  <input id="test1" v-if="cart.book_id == borrowCheck.book_id" class="input"
-                    v-model="$v.datelinedate.$model" type="date" placeholder="DATELINE DATE" />
-                  <input id="test1" v-else-if="cart.book_id != borrowCheck.book_id" disabled="disabled" class="input"
-                    v-model="$v.datelinedate.$model" type="date" placeholder="DATELINE DATE" />
+                  <input id="test1" disabled="disabled" class="input" placeholder="2022-01-15"
+                    :value="cart.con_borrow_dateline_date.slice(0, 10)" />
                 </div>
-                <template v-if="$v.datelinedate.$error">
-                  <p class="help is-danger" v-if="!$v.datelinedate.required">
-                    This datelinedate is required
-                  </p>
-                  <p class="help is-danger" v-else-if="!$v.datelinedate.complex">
-                    This datelinedate is required
-                  </p>
-                </template>
               </div>
               <br />
               <br />
               <div class="row mt-4">
                 <div class="column is-6">
-                  <button v-if="cart.book_id == borrowCheck.book_id" @click="addrequest(cart, borrowCheck)"
-                    class="button is-primary is-light is-fullwidth">
+                  <button @click="confirm(cart, index)" class="button is-primary is-light is-fullwidth">
                     <span id="text-button">CONFIRM</span>
                     <span class="icon is-small">
                       <i class="fa fa-caret-right"></i>
                     </span>
                   </button>
-                  <button v-else-if="cart.book_id != borrowCheck.book_id" @click="borrow(cart)"
-                    class="button is-fullwidth">
-                    <span id="text-button">BORROW</span>
-                    <span class="icon is-small">
-                      <i class="fa fa-book"></i>
-                    </span>
-                  </button>
                 </div>
                 <div class="column">
-                  <button @click="cancel()" class="button is-danger is-light is-fullwidth">
+                  <button @click="cancel(cart, index)" class="button is-danger is-light is-fullwidth">
                     <span id="text-button">CANCEL</span>
                     <span class="icon is-small">
                       <i class="fa fa-close"></i>
@@ -143,24 +128,6 @@
 
 <script>
 import axios from "@/plugins/axios";
-import {
-  required,
-} from "vuelidate/lib/validators";
-// @ is an alias to /src
-let text = localStorage.getItem("testJSON");
-let obj = JSON.parse(text);
-// console.log(obj);
-
-function complexdate(value) {
-  let currentDate = new Date();
-  let futureDate = new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  if (value <= futureDate) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
 
 export default {
   name: "Home",
@@ -174,14 +141,9 @@ export default {
       borrowdate: new Date().toISOString().slice(0, 10),
       datelinedate: "",
       bookid: "",
-      cart: [],
-      borrowCheck: ""
+      borrowCheck: "",
+      blogs1: [],
     };
-  },
-  created() {
-    let text = localStorage.getItem("testJSON");
-    let obj = JSON.parse(text);
-    this.cart = obj;
   },
   mounted() {
     this.getBlogs();
@@ -189,13 +151,9 @@ export default {
   methods: {
     getBlogs() {
       axios
-        .get("http://localhost:3000", {
-          params: {
-            search: this.search,
-          },
-        })
+        .get("http://localhost:3000/addrequest")
         .then((response) => {
-          this.blogs = response.data;
+          this.blogs = response.data.borrowdate;
         })
         .catch((err) => {
           console.log(err);
@@ -208,26 +166,36 @@ export default {
         return "https://bulma.io/images/placeholders/640x360.png";
       }
     },
-    addrequest(data1, index) {
+    confirm(data1, index) {
+      let test = data1.con_borrow_date.slice(0, 10)
+      let test1 = data1.con_borrow_dateline_date.slice(0, 10)
+      console.log(data1)
       const data = {
-        borrowdate: this.borrowdate,
-        datelinedate: this.datelinedate,
-        memnerId: this.user.member_id,
-        bookid: data1.book_id
+        borrowdate: test,
+        librarian: this.user.librarian_id,
+        borrowby: data1.con_member_id,
+        datelinedate: test1,
+        bookid: data1.con_book_id,
+        conID: data1.con_ID
       };
+      console.log(data)
       axios
-        .post("http://localhost:3000/memberborrow", data)
+        .post("http://localhost:3000/borrow", data)
         .then((res) => {
-          if (this.cart.length > 1) {
-            this.cart = Array.from(this.cart);
-            this.cart.splice(index, 1);
-            this.status = "borrowed";
+          if (this.blogs.length > 1) {
+            this.blogs = Array.from(this.blogs);
+            this.blogs.splice(index, 1);
+            this.status = "waiting";
+            this.borrowdate = "";
             this.librarian = "";
+            this.borrowby = "";
             this.datelinedate = "";
             this.bookid = ""
           } else {
             this.status = "";
+            this.borrowdate = "";
             this.librarian = "";
+            this.borrowby = "";
             this.datelinedate = "";
             this.bookid = ""
             this.$router.push("/home");
@@ -235,58 +203,31 @@ export default {
         })
         .catch((err) => {
           console.log(err)
-        })
+        });
     },
-    // confirm(data1, index) {
-    //   const data = {
-    //     status: this.status,
-    //     borrowdate: this.borrowdate,
-    //     librarian: this.user.librarian_id,
-    //     borrowby:  this.borrowby,
-    //     datelinedate: this.datelinedate,
-    //     bookid: data1.book_id
-    //   };
-    //    axios
-    //       .post("http://localhost:3000/borrow", data)
-    //       .then((res) => {
-    //         if(this.cart.length > 1){
-    //         this.cart = Array.from(this.cart);
-    //         this.cart.splice(index, 1);
-    //         this.status= "borrowed";
-    //         this.borrowdate= "";
-    //         this.librarian= "";
-    //         this.borrowby= "";
-    //         this.datelinedate= "";
-    //         this.bookid=""
-    //       } else{
-    //         this.status= "";
-    //         this.borrowdate= "";
-    //         this.librarian= "";
-    //         this.borrowby= "";
-    //         this.datelinedate= "";
-    //         this.bookid=""
-    //         this.$router.push("/home");
-    //       }
-    //       })
-    //       .catch((err) => {
-    //         console.log(err)
-    //       });
-    //   console.log(data);
-    //   console.log(this.cart);
-    // },
-    cancel() {
-      this.$router.push("/home");
+    cancel(cart, index) {
+      const data1 = {
+        bookID: cart.con_book_id,
+        confirmID: cart.con_ID,
+      };
+      axios
+        .delete("http://localhost:3000/deletecomfirm", { data: { bookID: cart.con_book_id, confirmID: cart.con_ID } })
+        .then((res) => {
+          if (this.blogs.length > 1) {
+            this.blogs = Array.from(this.blogs);
+            this.blogs.splice(index, 1);
+          } else {
+            this.$router.push("/home");
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        });
     },
     borrow(data1) {
-      console.log(data1.book_id)
+      console.log(this.user.librarian_id)
       this.borrowCheck = this.cart.filter((val) => val.book_id === data1.book_id)[0];
-    }
-  },
-  validations: {
-    datelinedate: {
-      required: required,
-      complex: complexdate,
-    }
+    },
   },
 };
 </script>

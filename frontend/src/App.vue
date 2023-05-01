@@ -60,6 +60,7 @@ nav{
               >
             </a>
             <div class="navbar-dropdown" id="nav-hack2">
+              <a v-if="user.librarian_id" class="navbar-item" @click="acceptpage()" id="nav-hack3">Accept</a>
               <a v-if="user_id  && user_id != undefined" class="navbar-item" @click="reglibra()" id="nav-hack3">Sign up Librarian</a>
               <a class="navbar-item" @click="profilepage()" id="nav-hack3">Profile</a>
               <a class="navbar-item" @click="DeletePassword()" id="nav-hack3">Log out</a>
@@ -133,6 +134,9 @@ export default {
     },
     reglibra(){
       this.$router.push("/user/signuplibrarian");
+    },
+    acceptpage(){
+      this.$router.push("/user/accept");
     }
   }}
 </script>

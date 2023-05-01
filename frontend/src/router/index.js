@@ -64,6 +64,12 @@ const routes = [
     meta: { login: true },
     component: () => import('../views/editbook.vue')
   },
+  {
+    path: '/user/accept',
+    name: 'accept',
+    meta: { login: true },
+    component: () => import('../views/accept.vue')
+  }
 ]
 
 const router = new VueRouter({ routes })
