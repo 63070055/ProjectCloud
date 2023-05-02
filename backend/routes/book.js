@@ -40,7 +40,7 @@ const upload = multer({ storage: storage });
 router.get("/blogs", isLoggedIn, function (req, res, next) {
   user = req.user
   // and return_date is null
-  const promise1 = pool.query("SELECT * FROM borrow_return JOIN borrow_item on(borrow_return.borrow_id = borrow_item.bi_borrow_id) JOIN book on(borrow_item.bi_book_id = book.book_id) WHERE br_member_id=? ", [
+  const promise1 = pool.query("SELECT * FROM borrow_return JOIN borrow_item on(borrow_return.borrow_id = borrow_item.bi_borrow_id) JOIN book on(borrow_item.bi_book_id = book.book_id) WHERE br_member_id=? and bi_borrow_status='borrowed'", [
     user.member_id,
   ]);
   Promise.all([promise1])
