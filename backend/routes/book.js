@@ -43,10 +43,24 @@ router.get("/blogs", isLoggedIn, function (req, res, next) {
   const promise1 = pool.query("SELECT * FROM borrow_return JOIN borrow_item on(borrow_return.borrow_id = borrow_item.bi_borrow_id) JOIN book on(borrow_item.bi_book_id = book.book_id) WHERE br_member_id=? and bi_borrow_status='borrowed'", [
     user.member_id,
   ]);
-  Promise.all([promise1])
+  const promise3 = pool.query("SELECT * FROM borrow_return JOIN borrow_item on(borrow_return.borrow_id = borrow_item.bi_borrow_id) JOIN book on(borrow_item.bi_book_id = book.book_id) WHERE br_member_id=? and bi_borrow_status='unborrow'", [
+    user.member_id,
+  ]);
+
+
+  const promise2 = pool.query("SELECT *, COUNT(item_no) FROM borrow_item JOIN book on(borrow_item.bi_book_id = book.book_id) GROUP BY bi_book_id ORDER BY COUNT(item_no) desc");
+
+
+  Promise.all([promise1, promise2,promise3])
+
+
     .then((results) => {
       const [images, imageFields] = results[0];
+      const [images1, image1Fields] = results[2];
+      const [top4, top4Fields] = results[1];
       res.json({
+        images1:images1,
+        top4: top4,
         images: images,
         error: null,
       });
