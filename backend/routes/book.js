@@ -348,9 +348,6 @@ router.delete('/deletecomfirm', isLoggedIn, async function (req, res, next) {
   const conid = req.body.confirmID;
   const bookid = req.body.bookID;
   try {
-    await pool.query(
-      'DELETE FROM confirmborrow WHERE con_ID=?', [conid]
-    )
     await pool.query('UPDATE book SET book.book_status = ? WHERE book_id=?',
       ['unborrow', bookid])
     res.json("success")
